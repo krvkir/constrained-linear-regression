@@ -98,7 +98,7 @@ class MultiConstrainedLinearRegression(ConstrainedLinearRegression):
         self.penalty_rate = penalty_rate
 
     def fit(self, X, y, min_coef=None, max_coef=None, initial_beta=None):
-        X, y, X_offset, y_offset, X_scale = self.preprocess(X, y)
+        X, y, X_offset, y_offset, X_scale, _ = self.preprocess(X, y)
         feature_count = X.shape[-1]
         min_coef_ = self._verify_coef(
             feature_count,
