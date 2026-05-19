@@ -1,5 +1,10 @@
+import logging
+
 import numpy as np
+
 from .constrained_linear_regression import ConstrainedLinearRegression
+
+logger = logging.getLogger(__name__)
 
 
 class MultiConstrainedLinearRegression(ConstrainedLinearRegression):
@@ -121,7 +126,7 @@ class MultiConstrainedLinearRegression(ConstrainedLinearRegression):
         step = 0
         while not (np.abs(prev_beta - beta) < self.tol).all():
             if step > self.max_iter:
-                print("THE MODEL DID NOT CONVERGE")
+                logger.warning("THE MODEL DID NOT CONVERGE")
                 break
 
             step += 1
@@ -145,8 +150,8 @@ class MultiConstrainedLinearRegression(ConstrainedLinearRegression):
                     grad,
                     hessian,
                     loss_scale,
-                    min_coef[MultiConstrainedLinearRegression.global_horizon_count],
-                    max_coef[MultiConstrainedLinearRegression.global_horizon_count],
+                    min_coef_[MultiConstrainedLinearRegression.global_horizon_count],
+                    max_coef_[MultiConstrainedLinearRegression.global_horizon_count],
                 )
 
         self._set_coef(beta)

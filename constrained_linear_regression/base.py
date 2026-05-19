@@ -3,6 +3,8 @@ try:
 except ImportError:
     from sklearn.linear_model.base import LinearModel, _preprocess_data
 import abc
+from typing import List, Optional
+
 import numpy as np
 from sklearn.base import RegressorMixin
 from sklearn.utils import check_X_y
@@ -14,6 +16,8 @@ class BaseConstrainedLinearRegression(LinearModel, RegressorMixin):
         fit_intercept=True,
         copy_X=True,
         nonnegative=False,
+        min_coef: Optional[List[float]] = None,
+        max_coef: Optional[List[float]] = None,
         ridge=0,
         lasso=0,
         tol=1e-15,
@@ -23,6 +27,8 @@ class BaseConstrainedLinearRegression(LinearModel, RegressorMixin):
         self.fit_intercept = fit_intercept
         self.copy_X = copy_X
         self.nonnegative = nonnegative
+        self.min_coef = min_coef
+        self.max_coef = max_coef
         self.ridge = ridge
         self.lasso = lasso
         self.tol = tol
@@ -46,10 +52,10 @@ class BaseConstrainedLinearRegression(LinearModel, RegressorMixin):
 
     def _verify_coef(self, feature_count, coef, value, idx=0):
         if coef is not None:
-            coef_ = coef
-            assert (
-                coef_.shape[-1] == feature_count
-            ), "Incorrect shape for coef_, the second dimension must match feature_count"
+            coef_ = np.array(coef)
+            assert coef_.shape[-1] == feature_count, (
+                "Incorrect shape for coef_, the second dimension must match feature_count"
+            )
         else:
             coef_ = np.ones((idx + 1, feature_count)) * value
         return coef_

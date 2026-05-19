@@ -1,6 +1,10 @@
-from .base import BaseConstrainedLinearRegression
+import logging
 
 import numpy as np
+
+from .base import BaseConstrainedLinearRegression
+
+logger = logging.getLogger(__name__)
 
 
 class ConstrainedLinearRegression(BaseConstrainedLinearRegression):
@@ -39,6 +43,10 @@ class ConstrainedLinearRegression(BaseConstrainedLinearRegression):
     def fit(self, X, y, min_coef=None, max_coef=None, initial_beta=None):
         X, y, X_offset, y_offset, X_scale = self.preprocess(X, y)
         feature_count = X.shape[-1]
+        if min_coef is None:
+            min_coef = self.min_coef
+        if max_coef is None:
+            max_coef = self.max_coef
         min_coef_ = self._verify_coef(feature_count, min_coef, -np.inf).flatten()
         max_coef_ = self._verify_coef(feature_count, max_coef, np.inf).flatten()
 
@@ -54,7 +62,8 @@ class ConstrainedLinearRegression(BaseConstrainedLinearRegression):
         step = 0
         while not (np.abs(prev_beta - beta) < self.tol).all():
             if step > self.max_iter:
-                print("THE MODEL DID NOT CONVERGE")
+                logger.warning("THE MODEL DID NOT CONVERGE")
+                # raise BaseException()
                 break
 
             step += 1
